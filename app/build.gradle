@@ -57,6 +57,7 @@ dependencies {
     compile 'com.google.apis:google-api-services-youtube:v3-rev183-1.21.0'
     compile 'com.google.http-client:google-http-client-android:1.22.0'
     compile 'com.google.http-client:google-http-client-jackson2:1.22.0'
+    compile 'com.squareup.okhttp3:okhttp:3.8.1'
 
 
 }
