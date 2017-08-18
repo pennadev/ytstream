@@ -7,6 +7,7 @@ import at.huber.youtubeExtractor.YouTubeExtractor
 import at.huber.youtubeExtractor.YtFile
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
+import penna.kotarch.utils.convertToList
 
 /**
  * Created by danpena on 7/25/17.
@@ -31,6 +32,22 @@ class Youtube(ctx: Context) : YouTubeExtractor(ctx) {
         this.extract(id, true, false)
         return extractionSubject
     }
-
 }
 
+data class Stream(val url: String = "", val ext: String = "")
+
+fun getBestStream(ytFile: SparseArray<YtFile>): Stream {
+    val list = convertToList(ytFile)
+    var best = ""
+
+    var maxBitRate = 0
+    var maxStream = Stream()
+    for (i in list) {
+        val audioBitrate = i.format.audioBitrate
+        if (audioBitrate > maxBitRate) {
+            maxStream = Stream(i.url, i.format.ext)
+            maxBitRate = audioBitrate
+        }
+    }
+    return maxStream
+}

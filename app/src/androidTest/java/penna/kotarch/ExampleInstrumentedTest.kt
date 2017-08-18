@@ -26,8 +26,8 @@ class ExampleInstrumentedTest {
         val extract = ext.extract("wcbtofyeLfA")
         val blockingFirst = extract.blockingFirst()
         val list = convertToList(blockingFirst.ytFile)
-        System.out.println(list.size)
         list.forEach { it -> System.out.println(it.url) }
+        System.out.println(list.size)
 
         val s = YoutubeSearch()
 
