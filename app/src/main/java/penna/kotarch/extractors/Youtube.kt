@@ -18,7 +18,7 @@ class Youtube(ctx: Context) : YouTubeExtractor(ctx) {
     data class YoutubeExtract(val ytFile: SparseArray<YtFile>, val metaData: VideoMeta)
 
 
-    val extractionSubject: PublishSubject<YoutubeExtract> = PublishSubject.create<YoutubeExtract>()
+    private val extractionSubject: PublishSubject<YoutubeExtract> = PublishSubject.create<YoutubeExtract>()
 
     override fun onExtractionComplete(p0: SparseArray<YtFile>?, p1: VideoMeta?) {
         when {
@@ -38,7 +38,6 @@ data class Stream(val url: String = "", val ext: String = "")
 
 fun getBestStream(ytFile: SparseArray<YtFile>): Stream {
     val list = convertToList(ytFile)
-    var best = ""
 
     var maxBitRate = 0
     var maxStream = Stream()

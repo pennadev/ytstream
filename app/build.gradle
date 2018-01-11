@@ -10,7 +10,7 @@ configurations {
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "26.0.1"
+    buildToolsVersion "26.0.2"
     defaultConfig {
         jackOptions {
             enabled true
@@ -39,7 +39,7 @@ android {
     }
 }
 
-def s = "26.0.1"
+def s = "26.1.0"
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -50,19 +50,21 @@ dependencies {
         exclude group: 'org.apache.httpcomponents'
     }
 
-    compile 'io.reactivex.rxjava2:rxkotlin:2.0.3'
+    compile 'io.reactivex.rxjava2:rxkotlin:2.1.0'
 
-    compile "android.arch.lifecycle:runtime:1.0.0-alpha8"
-    compile "android.arch.lifecycle:extensions:1.0.0-alpha8"
-    compile "android.arch.persistence.room:runtime:1.0.0-alpha8"
-    compile "android.arch.persistence.room:rxjava2:1.0.0-alpha8"
+    compile "android.arch.lifecycle:runtime:1.0.3"
+    compile "android.arch.lifecycle:extensions:1.0.0"
+    compile "android.arch.persistence.room:runtime:1.0.0"
+    compile "android.arch.persistence.room:rxjava2:1.0.0"
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
 
-    kapt "android.arch.persistence.room:compiler:1.0.0-alpha8"
-    kapt "android.arch.lifecycle:compiler:1.0.0-alpha8"
+    kapt "android.arch.persistence.room:compiler:1.0.0"
+    kapt "android.arch.lifecycle:compiler:1.0.0"
 
     compile "com.android.support:recyclerview-v7:$s"
     compile "com.android.support:cardview-v7:$s"
+
+    compile 'com.github.ajalt:timberkt:1.3.0'
 
     compile "org.jetbrains.anko:anko-commons:0.10.1"
 

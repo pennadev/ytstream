@@ -1,7 +1,7 @@
 package penna.kotarch.utils
 
 import android.content.Context
-import com.github.piasy.rxandroidaudio.StreamAudioPlayer
+import com.github.ajalt.timberkt.d
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
@@ -24,8 +24,6 @@ fun downloadToExternal(ctx: Context, url: String, fileName: String): Observable<
 
 fun downloadToFile(url: String, file: File): Observable<File> {
     return Observable.fromCallable {
-        val mStreamAudioPlayer = StreamAudioPlayer.getInstance()
-
         val request = Request.Builder().url(url).build()
         val body = client.newCall(request).execute().body()
         val source = body!!.source()
@@ -33,8 +31,8 @@ fun downloadToFile(url: String, file: File): Observable<File> {
         val sink = Okio.buffer(Okio.sink(file))
         var totalRead = 0L
         var read: Long
-        mStreamAudioPlayer.init()
-        sink.writeAll(source)
+        totalRead = sink.writeAll(source)
+        d { "Written $totalRead bytes. Content length: $contentLength" }
         sink.flush()
         sink.close()
         file

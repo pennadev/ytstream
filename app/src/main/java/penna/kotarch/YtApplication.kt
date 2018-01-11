@@ -8,6 +8,7 @@ import io.reactivex.subjects.PublishSubject
 import penna.kotarch.extractors.Stream
 import penna.kotarch.models.Db
 import penna.kotarch.ui.services.MyService
+import timber.log.Timber
 
 /**
  * Created by danpena on 8/15/17.
@@ -29,6 +30,7 @@ class YtApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        Timber.plant(Timber.DebugTree())
         database = Room.databaseBuilder(this, Db::class.java, "yt-db").build()
         startService(Intent(this, MyService::class.java))
     }

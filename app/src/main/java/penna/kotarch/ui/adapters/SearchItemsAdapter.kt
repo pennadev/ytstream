@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.github.ajalt.timberkt.d
 import com.google.api.services.youtube.model.SearchResult
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.search_item.view.*
@@ -27,6 +28,9 @@ class SearchItemsAdapter(private val viewModel: SearchViewModel) : RecyclerView.
             val yt = Youtube(viewModel.getApplication())
             yt
                     .extract(searchResult.id.videoId)
+                    .doOnNext {
+                        d { "Extracted ${searchResult.id.videoId}" }
+                    }
                     .subscribeOn(Schedulers.io())
                     .observeOn(Schedulers.io())
                     .subscribe { viewModel.play(getBestStream(it.ytFile)) }
@@ -53,7 +57,6 @@ class SearchItemsAdapter(private val viewModel: SearchViewModel) : RecyclerView.
         items.addAll(it)
         notifyDataSetChanged()
     }
-
 }
 
 class SearchItemVh(v: View) : RecyclerView.ViewHolder(v) {

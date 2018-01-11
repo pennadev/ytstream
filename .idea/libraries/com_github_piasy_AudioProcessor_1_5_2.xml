@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="com.github.piasy:AudioProcessor-1.5.2">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/AudioProcessor-1.5.2.aar/44e63173fbf3d30450ee4aaa19bdec1c/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/AudioProcessor-1.5.2.aar/44e63173fbf3d30450ee4aaa19bdec1c/res" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.piasy/AudioProcessor/1.5.2/841f7050b58c83cd1e9c965ce86bdfa2eea718b9/AudioProcessor-1.5.2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.piasy/AudioProcessor/1.5.2/e898024aa2dda01f8c49706c403aaa4a88aa82ec/AudioProcessor-1.5.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
