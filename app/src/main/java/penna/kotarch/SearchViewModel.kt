@@ -12,9 +12,7 @@ import penna.kotarch.utils.YoutubeSearch
  */
 class SearchViewModel(app: Application) : AndroidViewModel(app) {
 
-
     private val youtubeSearch = YoutubeSearch()
-
 
     fun query(q: String): Observable<List<SearchResult>> {
         return Observable

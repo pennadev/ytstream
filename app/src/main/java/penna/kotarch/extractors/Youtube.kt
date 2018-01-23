@@ -24,7 +24,7 @@ class Youtube(ctx: Context) : YouTubeExtractor(ctx) {
         when {
             p1 == null -> System.err.println("File was null")
             p0 == null -> System.err.println("Meta was null")
-            true -> extractionSubject.onNext(YoutubeExtract(p0, p1))
+            else -> extractionSubject.onNext(YoutubeExtract(p0, p1))
         }
     }
 
@@ -36,17 +36,24 @@ class Youtube(ctx: Context) : YouTubeExtractor(ctx) {
 
 data class Stream(val url: String = "", val ext: String = "")
 
+//https://en.wikipedia.org/w/index.php?title=YouTube&oldid=800910021#Quality_and_formats
+val itagList = listOf(
+        139,
+        249,
+        250,
+        140,
+        171,
+        251
+)
+
+
 fun getBestStream(ytFile: SparseArray<YtFile>): Stream {
     val list = convertToList(ytFile)
 
-    var maxBitRate = 0
-    var maxStream = Stream()
-    for (i in list) {
-        val audioBitrate = i.format.audioBitrate
-        if (audioBitrate > maxBitRate) {
-            maxStream = Stream(i.url, i.format.ext)
-            maxBitRate = audioBitrate
-        }
-    }
-    return maxStream
+    val maxBy = list
+            .maxBy {
+                itagList.indexOf(it.format.itag)
+            }
+
+    return Stream(maxBy?.url ?: "", maxBy?.format?.ext ?: "")
 }

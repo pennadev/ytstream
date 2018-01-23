@@ -5,6 +5,7 @@ import android.arch.persistence.room.Room
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.support.multidex.MultiDexApplication
 import com.facebook.stetho.Stetho
 import io.reactivex.subjects.PublishSubject
 import penna.kotarch.extractors.Stream
@@ -20,7 +21,7 @@ object Bus {
     val playStream: PublishSubject<Stream> = PublishSubject.create<Stream>()
 }
 
-class YtApplication : Application() {
+class YtApplication : MultiDexApplication() {
     companion object {
         var database: Db? = null
     }

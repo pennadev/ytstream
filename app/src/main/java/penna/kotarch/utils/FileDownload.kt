@@ -24,6 +24,7 @@ fun downloadToExternal(ctx: Context, url: String, fileName: String): Observable<
 
 fun downloadToFile(url: String, file: File): Observable<File> {
     return Observable.fromCallable {
+        d { "Starting download " }
         val request = Request.Builder().url(url).build()
         val body = client.newCall(request).execute().body()
         val source = body!!.source()

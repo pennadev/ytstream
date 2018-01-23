@@ -8,13 +8,14 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.support.v4.app.NotificationCompat
+import com.devbrackets.android.exomedia.AudioPlayer
 import com.github.ajalt.timberkt.d
-import com.github.piasy.audioprocessor.AudioProcessor
-import com.github.piasy.rxandroidaudio.StreamAudioPlayer
+import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.PublishSubject
 import penna.kotarch.Bus
 import penna.kotarch.R
@@ -32,20 +33,24 @@ class PlayInfo {
 }
 
 
-class MyService : Service() {
+class MyService() : Service() {
     override fun onBind(intent: Intent): IBinder? {
-        val mediaPlayer = MediaPlayer()
         return mBinder
     }
 
     private val mBinder = LocalBinder()
+
+    var playBusSubscription: Disposable? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val showTaskIntent = Intent(applicationContext, SearchActivity::class.java)
         showTaskIntent.action = Intent.ACTION_MAIN
         showTaskIntent.addCategory(Intent.CATEGORY_LAUNCHER)
         showTaskIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        Bus.playStream.subscribe(this::play)
+
+        mediaPlayer = AudioPlayer(this)
+
+        playBusSubscription = Bus.playStream.subscribe(this::play)
 
         val contentIntent = PendingIntent.getActivity(
                 applicationContext,
@@ -78,43 +83,45 @@ class MyService : Service() {
         return super.onStartCommand(intent, flags, startId)
     }
 
-    class LocalBinder : Binder() {
-    }
+    class LocalBinder : Binder()
 
-    fun getService(): MyService {
-        return this@MyService
-    }
+    private var mediaPlayer: AudioPlayer? = null
 
-    val BUFFER_SIZE = 2048
+    var downloadSub: Disposable? = null
 
-    val mStreamAudioPlayer = StreamAudioPlayer.getInstance();
-    val mAudioProcessor = AudioProcessor(BUFFER_SIZE);
-    val mBuffer = ByteArray(BUFFER_SIZE)
-
-    val mediaPlayer = MediaPlayer()
-
-    var isPlaying = false
+    private var isPlaying: Boolean = false
 
     fun play(stream: Stream) {
-        downloadToExternal(application, stream.url, "Test" + "." + stream.ext).subscribe {
-            d { "Playing" }
-            if (isPlaying) {
-                mediaPlayer.stop()
-                mediaPlayer.reset()
-            }
-
-            mediaPlayer.setOnCompletionListener {
-                mediaPlayer.reset()
-                isPlaying = false
-            }
-
-            mediaPlayer.setDataSource(it.absolutePath)
-            d { it.absolutePath }
-            mediaPlayer.prepare()
-            mediaPlayer.start()
-            isPlaying = true
+        d { "Playing" }
+        if (isPlaying) {
+            mediaPlayer?.stopPlayback()
+            mediaPlayer?.reset()
         }
+
+        mediaPlayer?.setOnCompletionListener {
+            mediaPlayer?.reset()
+            isPlaying = false
+        }
+
+        mediaPlayer?.setOnPreparedListener {
+            mediaPlayer?.start()
+        }
+
+        mediaPlayer?.setDataSource(Uri.parse(stream.url))
+        d { stream.url }
+        mediaPlayer?.prepareAsync()
+
+
+        isPlaying = true
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        downloadSub?.dispose()
+        playBusSubscription?.dispose()
+        mediaPlayer?.release()
+    }
+
 
 }
 
