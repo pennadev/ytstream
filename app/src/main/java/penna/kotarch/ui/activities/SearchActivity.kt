@@ -1,5 +1,6 @@
 package penna.kotarch.ui.activities
 
+import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -19,14 +20,21 @@ class SearchActivity : AppCompatActivity() {
         setContentView(R.layout.activity_search)
 
         val viewModel = ViewModelProviders.of(this).get(SearchViewModel::class.java)
-        list.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        list.layoutManager = LinearLayoutManager(this,
+                LinearLayoutManager.VERTICAL, false)
 
         val adapter = SearchItemsAdapter(viewModel)
+
         list.adapter = adapter
+
         RxTextView.afterTextChangeEvents(searchbox)
                 .throttleLast(2, TimeUnit.SECONDS)
                 .flatMap { viewModel.query(it.editable().toString()) }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { adapter.setResults(it) }
+    }
+
+    inline fun <reified VM : ViewModel> viewModel(): VM {
+        return ViewModelProviders.of(this).get(VM::class.java)
     }
 }

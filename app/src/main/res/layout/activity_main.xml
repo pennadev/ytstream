@@ -5,29 +5,62 @@
     android:background="#DDD"
     android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/input_title"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="Song Title" />
+        android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/input_id"
+        <EditText
+            android:id="@+id/input_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Song Title" />
 
+        <EditText
+            android:id="@+id/input_id"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Id" />
+
+        <EditText
+            android:id="@+id/input_path"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Path" />
+
+        <Button
+            android:id="@+id/insert"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="insert" />
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="Id" />
+        android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/input_path"
+        <EditText
+            android:id="@+id/input_playlist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="playlistTitle" />
 
+        <Button
+            android:id="@+id/insertPlaylist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="insertPlaylist" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/playlistParent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="Path" />
+        android:orientation="vertical">
 
-    <Button
-        android:id="@+id/insert"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="insert" />
+    </LinearLayout>
+
 </LinearLayout>
