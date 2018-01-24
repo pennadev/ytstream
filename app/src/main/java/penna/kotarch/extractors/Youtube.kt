@@ -38,22 +38,21 @@ data class Stream(val url: String = "", val ext: String = "")
 
 //https://en.wikipedia.org/w/index.php?title=YouTube&oldid=800910021#Quality_and_formats
 val itagList = listOf(
-        139,
-        249,
-        250,
-        140,
-        171,
-        251
+        139, // AAC 48kbps
+        249, // Opus 48kbps
+        250, // Opus 64kbps
+        140, // AAC 128kbps
+        171, // Vorbis 128kbps
+        251  // Opus 160kbps
 )
 
 
 fun getBestStream(ytFile: SparseArray<YtFile>): Stream {
     val list = convertToList(ytFile)
 
-    val maxBy = list
-            .maxBy {
-                itagList.indexOf(it.format.itag)
-            }
+    val maxBy = list.maxBy {
+        itagList.indexOf(it.format.itag)
+    }
 
     return Stream(maxBy?.url ?: "", maxBy?.format?.ext ?: "")
 }

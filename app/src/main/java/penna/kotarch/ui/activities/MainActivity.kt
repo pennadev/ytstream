@@ -3,9 +3,10 @@ package penna.kotarch.ui.activities
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import com.google.api.services.youtube.model.Playlist
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.toast
@@ -14,32 +15,46 @@ import penna.kotarch.SearchViewModel
 import penna.kotarch.getApp
 import penna.kotarch.models.*
 
+fun Disposable.addDisposable(compoisteDisposable: CompositeDisposable) {
+    compoisteDisposable.add(this)
+}
+
 class MainActivity : AppCompatActivity() {
 
+    val compoisteDisposable: CompositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val songDao = getApp(this).db!!.songDao()
-        val playlistDao = getApp(this).db!!.playlistDao()
-        val playlistSongDao = getApp(this).db!!.playlistsSongsDao()
 
-        insert.setOnClickListener {
-            insertSong(songDao)
+        val viewModel = ViewModelProviders.of(this).get(SearchViewModel::class.java)
+    }
+
+    private val songDao: SongDao
+        get() {
+            return getApp(this).db!!.songDao()
         }
 
-        insertPlaylist.setOnClickListener {
-            insertPlaylist(playlistDao)
+    private val playlistDao: PlaylistDao
+        get() {
+            return getApp(this).db!!.playlistDao()
         }
 
+    private val playlistsSongsDao: PlaylistsSongsDao
+        get() {
+            return getApp(this).db!!.playlistsSongsDao()
+        }
+
+    override fun onResume() {
+        super.onResume()
 
         songDao.getAllSongs()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({}, {
 
-                })
+                }).addDisposable(compoisteDisposable)
 
         playlistDao.getAllPlaylists()
                 .subscribeOn(Schedulers.io())
@@ -50,15 +65,25 @@ class MainActivity : AppCompatActivity() {
                         message += "\n" + "$i"
                     }
                     toast(message)
-                }
+                }.addDisposable(compoisteDisposable)
 
-        playlistSongDao.getSongsForPlaylist("playlist1")
+        playlistsSongsDao.getSongsForPlaylist("playlist1")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(toastSongs())
+                .subscribe(toastSongs()).addDisposable(compoisteDisposable)
 
+        insert.setOnClickListener {
+            insertSong(songDao)
+        }
 
-        val viewModel = ViewModelProviders.of(this).get(SearchViewModel::class.java)
+        insertPlaylist.setOnClickListener {
+            insertPlaylist(playlistDao)
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        compoisteDisposable.dispose()
     }
 
     private fun toastSongs(): (List<Song>) -> Unit {
