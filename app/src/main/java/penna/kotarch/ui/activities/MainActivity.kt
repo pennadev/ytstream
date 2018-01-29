@@ -32,17 +32,17 @@ class MainActivity : BaseActivity() {
 
     private val songDao: SongDao
         get() {
-            return getApp(this).db!!.songDao()
+            return getApp(this).db.songDao()
         }
 
     private val playlistDao: PlaylistDao
         get() {
-            return getApp(this).db!!.playlistDao()
+            return getApp(this).db.playlistDao()
         }
 
     private val playlistsSongsDao: PlaylistsSongsDao
         get() {
-            return getApp(this).db!!.playlistsSongsDao()
+            return getApp(this).db.playlistsSongsDao()
         }
 
     override fun onResume() {

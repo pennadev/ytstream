@@ -17,17 +17,23 @@ import penna.kotarch.models.Song
 //handles presistance of playback state
 class MediaPlaybackController {
     private val playStream: PublishSubject<PlayingState> = PublishSubject.create()
+    var currentState = PlayingState()
+
 
     fun observePlayState(): Flowable<PlayingState> {
-        return playStream.toFlowable(BackpressureStrategy.LATEST)
+        return playStream
+                .doOnNext {
+                    currentState = it
+                }
+                .toFlowable(BackpressureStrategy.LATEST).share()
     }
 
     fun togglePause() {
-
+        playStream.onNext(currentState.copy(playing = !currentState.playing))
     }
 
     fun stop() {
-
+        playStream.onNext(currentState.copy(playing = false))
     }
 
     fun enqueSong() {
@@ -35,7 +41,10 @@ class MediaPlaybackController {
     }
 
     fun startPlayingSong(song: Song) {
-
+        playStream.onNext(PlayingState(
+                playing = true,
+                currentSong = song
+        ))
     }
 
     fun extractAndPlay(context: Context, id: String) {
@@ -45,25 +54,21 @@ class MediaPlaybackController {
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .subscribe({
+                    startPlayingSong(songFromYtExtract(it))
                     disposable?.dispose()
-
-
-                    startPlayingSong(getBestStream(it.ytFile))
                 }, {
+                    it.printStackTrace()
                     disposable?.dispose()
                 })
-
     }
-
 }
 
-fun songFromYtExtract(it: Youtube.YoutubeExtract) {
+fun songFromYtExtract(it: Youtube.YoutubeExtract): Song {
+    return Song(songId = it.metaData?.videoId ?: "", title = it.metaData?.title ?: "", url = getBestStream(it.ytFile).url)
 
 }
 
 data class PlayingState(
         var playing: Boolean = false,
-        var title: String = "",
-        var stream: Stream? = null,
         var currentSong: Song? = null
 )

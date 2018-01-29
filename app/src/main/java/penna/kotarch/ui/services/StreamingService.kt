@@ -14,11 +14,14 @@ import android.support.v4.app.NotificationCompat
 import android.widget.RemoteViews
 import com.devbrackets.android.exomedia.AudioPlayer
 import com.github.ajalt.timberkt.d
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.PublishSubject
+import org.jetbrains.anko.px2sp
 import penna.kotarch.R
 import penna.kotarch.extractors.Stream
 import penna.kotarch.getApp
+import penna.kotarch.models.Song
 import penna.kotarch.ui.activities.SearchActivity
 
 
@@ -30,7 +33,6 @@ class StreamingService() : Service() {
     private val mBinder = LocalBinder()
 
     var playBusSubscription: Disposable? = null
-    var playingState: PlayingState = PlayingState(title = "")
 
 
     companion object Constants {
@@ -59,6 +61,7 @@ class StreamingService() : Service() {
     private val notificationManager: NotificationManager by lazy {
         getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     }
+
     private val contentIntent: PendingIntent by lazy {
         val showTaskIntent = Intent(applicationContext, SearchActivity::class.java)
         showTaskIntent.action = Intent.ACTION_MAIN
@@ -91,27 +94,28 @@ class StreamingService() : Service() {
 
 
         val remote = RemoteViews(packageName, R.layout.notification)
-        remote.setTextViewText(R.id.title, playingState.title)
+        remote.setTextViewText(R.id.title, playingState.currentSong?.title)
         remote.setOnClickPendingIntent(R.id.next_btn, clickPendingIntent(NEXT_COMMAND))
         remote.setOnClickPendingIntent(R.id.play_btn, clickPendingIntent(PLAY_COMMAND))
         remote.setOnClickPendingIntent(R.id.previous_btn, clickPendingIntent(PREVIOUS_COMMAND))
         return remote
     }
 
-    val mediaPlaybackController: MediaPlaybackController by lazy { getApp(this).playBackController }
+    private val mediaPlaybackController: MediaPlaybackController by lazy { getApp(this).playBackController }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         registerBroadcastReceiver()
 
-        playBusSubscription = mediaPlaybackController.observePlayState().subscribe(this::handleStateChanged)
+        playBusSubscription = mediaPlaybackController.observePlayState().observeOn(AndroidSchedulers.mainThread()).subscribe(this::handleStateChanged)
 
-        val notification = buildPersistentNotification()
+        val notification = buildPersistentNotification(PlayingState())
         startForeground(NOTIFICATION_ID, notification)
 
         return super.onStartCommand(intent, flags, startId)
     }
 
 
-    private fun play(stream: Stream) {
+    private fun play(url: String) {
         d { "Playing" }
         if (isPlaying) {
             mediaPlayer.stopPlayback()
@@ -127,19 +131,20 @@ class StreamingService() : Service() {
             mediaPlayer.start()
         }
 
-        mediaPlayer.setDataSource(Uri.parse(stream.url))
-        d { stream.url }
+        mediaPlayer.setDataSource(Uri.parse(url))
+        d { url }
         mediaPlayer.prepareAsync()
 
 
         isPlaying = true
     }
 
-
+    var currentSong: Song? = Song()
     private fun handleStateChanged(playingState: PlayingState) {
-
-
-        notificationManager.notify(Constants.NOTIFICATION_ID, buildNotification())
+        if (playingState.playing && playingState.currentSong?.equals(currentSong) == false) {
+            notificationManager.notify(Constants.NOTIFICATION_ID, buildNotification(playingState))
+            playingState.currentSong?.url?.let { play(it) }
+        }
     }
 
     private fun pause() {
@@ -149,12 +154,12 @@ class StreamingService() : Service() {
     }
 
 
-    private fun buildPersistentNotification(): Notification? {
+    private fun buildPersistentNotification(playingState: PlayingState): Notification? {
 
         //handle oreo notification api
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel(CHANNEL_ID, "YtStream", NotificationManager.IMPORTANCE_LOW).apply {
-                description = "android apis are weird"
+                description = "YtStream app"
                 enableLights(true)
                 lightColor = Color.RED
                 enableVibration(false)
@@ -163,10 +168,10 @@ class StreamingService() : Service() {
             }
         }
 
-        return buildNotification()
+        return buildNotification(playingState)
     }
 
-    private fun buildNotification(): Notification? {
+    private fun buildNotification(playingState: PlayingState): Notification? {
         return NotificationCompat.Builder(applicationContext, CHANNEL_ID)
                 .setCustomContentView(createNotificationView(playingState))
                 .setPriority(Notification.PRIORITY_LOW)

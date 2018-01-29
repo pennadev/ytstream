@@ -6,11 +6,8 @@ import android.content.Intent
 import android.os.Build
 import android.support.multidex.MultiDexApplication
 import com.facebook.stetho.Stetho
-import io.reactivex.subjects.PublishSubject
-import penna.kotarch.extractors.Stream
-import penna.kotarch.models.Db
+import penna.kotarch.models.YtStreamDb
 import penna.kotarch.ui.services.MediaPlaybackController
-import penna.kotarch.ui.services.PlayingState
 import penna.kotarch.ui.services.StreamingService
 import timber.log.Timber
 
@@ -20,22 +17,16 @@ import timber.log.Timber
 
 
 class YtApplication : MultiDexApplication() {
-    companion object {
-        var database: Db? = null
-    }
 
-    val db: Db?
-        get() {
-            return database
-        }
+    val db: YtStreamDb by lazy {
+        Room.databaseBuilder(this, YtStreamDb::class.java, "yt-db")
+                .fallbackToDestructiveMigration() //TODO handle migrations
+                .build()
+    }
 
     override fun onCreate() {
         super.onCreate()
         Timber.plant(Timber.DebugTree())
-
-        database = Room.databaseBuilder(this, Db::class.java, "yt-db")
-                .fallbackToDestructiveMigration() //TODO handle migrations
-                .build()
 
         startMusicService()
 

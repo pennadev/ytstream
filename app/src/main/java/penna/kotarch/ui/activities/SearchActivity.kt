@@ -6,9 +6,12 @@ import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import com.github.ajalt.timberkt.d
 import com.jakewharton.rxbinding2.widget.RxTextView
 import com.trello.rxlifecycle2.android.lifecycle.kotlin.bindToLifecycle
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.plusAssign
 import kotlinx.android.synthetic.main.activity_search.*
 import penna.kotarch.R
@@ -27,6 +30,13 @@ class SearchActivity : BaseActivity() {
         
     }
 
+    var disposable: Disposable? = null
+
+    override fun onPause() {
+        super.onPause()
+        disposable?.dispose()
+    }
+
     override fun onResume() {
         super.onResume()
         val viewModel = ViewModelProviders.of(this).get(SearchViewModel::class.java)
@@ -34,12 +44,11 @@ class SearchActivity : BaseActivity() {
         list.adapter = adapter
 
         onPauseDispose += RxTextView.afterTextChangeEvents(searchbox)
-                .throttleLast(2, TimeUnit.SECONDS)
+                .debounce(2, TimeUnit.SECONDS)
                 .flatMap { viewModel.query(it.editable().toString()) }
                 .observeOn(AndroidSchedulers.mainThread())
-                .bindToLifecycle(this)
+                .share()
                 .subscribe { adapter.setResults(it) }
 
     }
-
 }

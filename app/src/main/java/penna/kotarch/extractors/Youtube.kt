@@ -5,10 +5,7 @@ import android.util.SparseArray
 import at.huber.youtubeExtractor.VideoMeta
 import at.huber.youtubeExtractor.YouTubeExtractor
 import at.huber.youtubeExtractor.YtFile
-import io.reactivex.BackpressureStrategy
-import io.reactivex.Observable
-import io.reactivex.Single
-import io.reactivex.SingleSource
+import io.reactivex.*
 import io.reactivex.rxkotlin.toSingle
 import io.reactivex.subjects.PublishSubject
 import penna.kotarch.utils.convertToList
@@ -19,7 +16,7 @@ import penna.kotarch.utils.convertToList
 
 class Youtube(ctx: Context) : YouTubeExtractor(ctx) {
 
-    data class YoutubeExtract(val ytFile: SparseArray<YtFile>, val metaData: VideoMeta)
+    data class YoutubeExtract(val ytFile: SparseArray<YtFile>, val metaData: VideoMeta?)
 
 
     private val extractionSubject: PublishSubject<YoutubeExtract> = PublishSubject.create<YoutubeExtract>()
@@ -32,9 +29,9 @@ class Youtube(ctx: Context) : YouTubeExtractor(ctx) {
         }
     }
 
-    fun extract(id: String): Single<YoutubeExtract> {
+    fun extract(id: String): Flowable<YoutubeExtract> {
         this.extract(id, true, false)
-        return extractionSubject.toFlowable(BackpressureStrategy.LATEST).single(null)
+        return extractionSubject.toFlowable(BackpressureStrategy.LATEST)
     }
 }
 

@@ -15,7 +15,7 @@ import android.arch.persistence.room.RoomDatabase
         version = 2
 )
 
-abstract class Db : RoomDatabase() {
+abstract class YtStreamDb : RoomDatabase() {
     abstract fun songDao(): SongDao
     abstract fun playlistDao(): PlaylistDao
     abstract fun playlistsSongsDao(): PlaylistsSongsDao

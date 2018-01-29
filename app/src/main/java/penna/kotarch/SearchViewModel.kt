@@ -20,9 +20,6 @@ class SearchViewModel(app: Application) : AndroidViewModel(app) {
                 .fromCallable { youtubeSearch.search(q)?.items; }
     }
 
-    fun play(playingState: PlayingState) {
-        Bus.playStream.onNext(playingState)
-    }
 
     override fun onCleared() {
         super.onCleared()

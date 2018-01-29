@@ -24,7 +24,7 @@ class YoutubeSearch {
             search!!.fields = "items(id/kind," +
                     "id/videoId," +
                     "snippet/title," +
-                    "snippet/thumbnails/default/url)"
+                    "snippet/thumbnails/medium/url)"
             search!!.maxResults = 25L
             search!!.key = "AIzaSyATIXwq-s4xmzP0QKK1dCQDLHaT6Gdu4rU"
         } catch (e: IOException) {
