@@ -12,6 +12,8 @@ import penna.kotarch.R
 import penna.kotarch.SearchViewModel
 import penna.kotarch.extractors.Youtube
 import penna.kotarch.extractors.getBestStream
+import penna.kotarch.getApp
+import penna.kotarch.ui.services.PlayingState
 
 /**
  * Created by danpena on 8/15/17.
@@ -24,16 +26,8 @@ class SearchItemsAdapter(private val viewModel: SearchViewModel) : RecyclerView.
     override fun onBindViewHolder(holder: SearchItemVh?, position: Int) {
         val searchResult = items[position]
         holder?.songTitle(searchResult.snippet.title)
-        holder?.itemView?.imageButton?.setOnClickListener {
-            val yt = Youtube(viewModel.getApplication())
-            yt
-                    .extract(searchResult.id.videoId)
-                    .doOnNext {
-                        d { "Extracted ${searchResult.id.videoId}" }
-                    }
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(Schedulers.io())
-                    .subscribe { viewModel.play(getBestStream(it.ytFile)) }
+        holder?.itemView?.playButton?.setOnClickListener {
+            getApp(viewModel.getApplication()).playBackController.extractAndPlay(viewModel.getApplication(), searchResult.id.videoId)
         }
     }
 

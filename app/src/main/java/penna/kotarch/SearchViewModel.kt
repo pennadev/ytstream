@@ -5,6 +5,7 @@ import android.arch.lifecycle.AndroidViewModel
 import com.google.api.services.youtube.model.SearchResult
 import io.reactivex.Observable
 import penna.kotarch.extractors.Stream
+import penna.kotarch.ui.services.PlayingState
 import penna.kotarch.utils.YoutubeSearch
 
 /**
@@ -19,8 +20,8 @@ class SearchViewModel(app: Application) : AndroidViewModel(app) {
                 .fromCallable { youtubeSearch.search(q)?.items; }
     }
 
-    fun play(stream: Stream) {
-        Bus.playStream.onNext(stream)
+    fun play(playingState: PlayingState) {
+        Bus.playStream.onNext(playingState)
     }
 
     override fun onCleared() {

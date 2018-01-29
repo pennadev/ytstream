@@ -20,7 +20,7 @@
         </activity>
 
         <service
-            android:name=".ui.services.MyService"
+            android:name=".ui.services.StreamingService"
             android:enabled="true"
             android:exported="true" />
         <service

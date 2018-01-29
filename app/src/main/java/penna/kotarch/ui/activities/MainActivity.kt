@@ -7,6 +7,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.toast
@@ -19,16 +20,14 @@ fun Disposable.addDisposable(compoisteDisposable: CompositeDisposable) {
     compoisteDisposable.add(this)
 }
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
-    val compoisteDisposable: CompositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-
         val viewModel = ViewModelProviders.of(this).get(SearchViewModel::class.java)
+
     }
 
     private val songDao: SongDao
@@ -54,7 +53,7 @@ class MainActivity : AppCompatActivity() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({}, {
 
-                }).addDisposable(compoisteDisposable)
+                }).addTo(onPauseDispose)
 
         playlistDao.getAllPlaylists()
                 .subscribeOn(Schedulers.io())
@@ -65,12 +64,12 @@ class MainActivity : AppCompatActivity() {
                         message += "\n" + "$i"
                     }
                     toast(message)
-                }.addDisposable(compoisteDisposable)
+                }.addTo(onPauseDispose)
 
         playlistsSongsDao.getSongsForPlaylist("playlist1")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(toastSongs()).addDisposable(compoisteDisposable)
+                .subscribe(toastSongs()).addTo(onPauseDispose)
 
         insert.setOnClickListener {
             insertSong(songDao)
@@ -79,11 +78,6 @@ class MainActivity : AppCompatActivity() {
         insertPlaylist.setOnClickListener {
             insertPlaylist(playlistDao)
         }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        compoisteDisposable.dispose()
     }
 
     private fun toastSongs(): (List<Song>) -> Unit {

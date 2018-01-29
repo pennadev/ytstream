@@ -13,8 +13,6 @@ import java.io.File
  * Created by danpena on 8/11/17.
  */
 
-val DOWNLOAD_CHUNK_SIZE = 2048L
-
 val client: OkHttpClient = OkHttpClient.Builder().build()
 
 fun downloadToExternal(ctx: Context, url: String, fileName: String): Observable<File> {
@@ -27,12 +25,9 @@ fun downloadToFile(url: String, file: File): Observable<File> {
         d { "Starting download " }
         val request = Request.Builder().url(url).build()
         val body = client.newCall(request).execute().body()
-        val source = body!!.source()
-        val contentLength = body.contentLength()
+        val contentLength = body?.contentLength()
         val sink = Okio.buffer(Okio.sink(file))
-        var totalRead = 0L
-        var read: Long
-        totalRead = sink.writeAll(source)
+        val totalRead = if (body != null) sink.writeAll(body.source()) else 0
         d { "Written $totalRead bytes. Content length: $contentLength" }
         sink.flush()
         sink.close()

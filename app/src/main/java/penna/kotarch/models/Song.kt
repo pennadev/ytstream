@@ -12,7 +12,7 @@ data class Song(
         @PrimaryKey(autoGenerate = false)
         var songId: String = "",
         var title: String = "",
-        var storagePath: String = ""
+        var url: String = ""
 )
 
 @Entity

@@ -1,6 +1,5 @@
 package penna.kotarch
 
-import android.app.Application
 import android.arch.persistence.room.Room
 import android.content.Context
 import android.content.Intent
@@ -10,16 +9,15 @@ import com.facebook.stetho.Stetho
 import io.reactivex.subjects.PublishSubject
 import penna.kotarch.extractors.Stream
 import penna.kotarch.models.Db
-import penna.kotarch.ui.services.MyService
+import penna.kotarch.ui.services.MediaPlaybackController
+import penna.kotarch.ui.services.PlayingState
+import penna.kotarch.ui.services.StreamingService
 import timber.log.Timber
 
 /**
  * Created by danpena on 8/15/17.
  */
 
-object Bus {
-    val playStream: PublishSubject<Stream> = PublishSubject.create<Stream>()
-}
 
 class YtApplication : MultiDexApplication() {
     companion object {
@@ -46,7 +44,7 @@ class YtApplication : MultiDexApplication() {
     }
 
     private fun startMusicService() {
-        val intent = Intent(this, MyService::class.java)
+        val intent = Intent(this, StreamingService::class.java)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(intent)
@@ -54,6 +52,8 @@ class YtApplication : MultiDexApplication() {
             startService(intent)
         }
     }
+
+    val playBackController: MediaPlaybackController by lazy { MediaPlaybackController() }
 }
 
 fun getApp(ctx: Context): YtApplication {
