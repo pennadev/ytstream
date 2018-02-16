@@ -2,13 +2,11 @@ package penna.kotarch.ui.services
 
 
 import android.content.Context
-import at.huber.youtubeExtractor.YtFile
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
-import penna.kotarch.extractors.Stream
 import penna.kotarch.extractors.Youtube
 import penna.kotarch.extractors.getBestStream
 import penna.kotarch.models.Song
@@ -36,8 +34,8 @@ class MediaPlaybackController {
         playStream.onNext(currentState.copy(playing = false))
     }
 
-    fun enqueSong() {
 
+    fun enqueSong() {
     }
 
     fun startPlayingSong(song: Song) {
@@ -64,7 +62,8 @@ class MediaPlaybackController {
 }
 
 fun songFromYtExtract(it: Youtube.YoutubeExtract): Song {
-    return Song(songId = it.metaData?.videoId ?: "", title = it.metaData?.title ?: "", url = getBestStream(it.ytFile).url)
+    return Song(songId = it.metaData?.videoId ?: "", title = it.metaData?.title
+            ?: "", url = getBestStream(it.ytFile).url)
 
 }
 

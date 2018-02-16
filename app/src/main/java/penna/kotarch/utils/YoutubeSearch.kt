@@ -6,6 +6,7 @@ import com.google.api.services.youtube.YouTube
 import com.google.api.services.youtube.model.SearchListResponse
 
 import java.io.IOException
+import java.io.Serializable
 
 /**
  * Created by danpena on 8/1/17.
@@ -32,7 +33,7 @@ class YoutubeSearch {
         }
     }
 
-    fun search(q: String): SearchListResponse? {
+    fun search(q: String): SearchListResponse {
         search!!.q = q
         try {
             return search!!.execute()
@@ -40,7 +41,7 @@ class YoutubeSearch {
             e.printStackTrace()
         }
 
-        return null
+        return SearchListResponse()
     }
 }
 

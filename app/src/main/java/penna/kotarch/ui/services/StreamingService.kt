@@ -16,10 +16,7 @@ import com.devbrackets.android.exomedia.AudioPlayer
 import com.github.ajalt.timberkt.d
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.subjects.PublishSubject
-import org.jetbrains.anko.px2sp
 import penna.kotarch.R
-import penna.kotarch.extractors.Stream
 import penna.kotarch.getApp
 import penna.kotarch.models.Song
 import penna.kotarch.ui.activities.SearchActivity

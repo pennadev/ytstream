@@ -2,7 +2,6 @@ package penna.kotarch.ui.activities
 
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -98,7 +97,7 @@ class MainActivity : BaseActivity() {
 
         Single.fromCallable(::insertLambda)
                 .map {
-                    getApp(this).db!!.playlistsSongsDao().insert(PlaylistsSongs(
+                    getApp(this).db.playlistsSongsDao().insert(PlaylistsSongs(
                             input_id.text.toString(),
                             "playlist1"
                     ))

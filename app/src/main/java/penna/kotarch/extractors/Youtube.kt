@@ -5,8 +5,8 @@ import android.util.SparseArray
 import at.huber.youtubeExtractor.VideoMeta
 import at.huber.youtubeExtractor.YouTubeExtractor
 import at.huber.youtubeExtractor.YtFile
-import io.reactivex.*
-import io.reactivex.rxkotlin.toSingle
+import io.reactivex.BackpressureStrategy
+import io.reactivex.Flowable
 import io.reactivex.subjects.PublishSubject
 import penna.kotarch.utils.convertToList
 
